@@ -5,9 +5,14 @@
 #include <wrl.h>
 #include <vector>
 #include "DxgiInfoManager.h"
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
+#include <memory>
+#include <random>
 
 class Graphics
 {
+	friend class Bindable;
 public:
 	class Exception : public PulsarException
 	{
@@ -54,8 +59,11 @@ public:
 	void ClearBuffer(float red, float green, float blue) noexcept;
 	static std::wstring CharToWide(const char* text);
 	static std::string WideToUtf8(const std::wstring& w);
-	void DrawTestTriangle(float angle);
+	void DrawIndexed(UINT count) noexcept(!IS_DEBUG);
+	void SetProjection(DirectX::FXMMATRIX proj) noexcept;
+	DirectX::XMMATRIX GetProjection() const noexcept;
 private:
+	DirectX::XMMATRIX projection;
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;
 #endif
@@ -63,4 +71,5 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwap;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pTarget;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSV;
 };
